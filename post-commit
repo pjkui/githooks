@@ -1,7 +1,7 @@
 #!D:\Python27\python
-#!/bin/sh python
+# #!/bin/sh python
 
-print 'start post-commit'
+# print 'start post-commit'
 import sys, os, re, json
 from subprocess import check_output
 githubUrl = 'https://github.com/pocketgems/visualdirecting/commit/'
@@ -14,8 +14,10 @@ print str;
 print 'start sending e-mail'
 print log
 # get email list
-emails = re.findall(r'([\+a-z0-9_\.-]+@[\da-z\.-]+\.[a-z\.]{2,20})',log)
-emailTo = ';'.join(emails)
+emailsFile = open('emails.txt','r')
+# emails = re.findall(r'([\+a-z0-9_\.-]+@[\da-z\.-]+\.[a-z\.]{2,20})',log)
+emailTo = emailsFile.read()
+# print 'end post-commit'
 contents = log.split('<split>')
 emial_title = contents[0]
 email_body = contents[1]
@@ -31,4 +33,3 @@ mail.Body = email_body
 # # attachment  = "Path to the attachment"
 # # mail.Attachments.Add(attachment)
 mail.Send()
-print 'end post-commit'
