@@ -3,18 +3,20 @@
 
 # print 'start post-commit'
 import sys, os, re, json
+import tempfile
+
 from subprocess import check_output
 githubUrl = 'https://github.com/pocketgems/visualdirecting/commit/'
 oaUrl = 'http://git.code.oa.com/epsd/epsd/commit/'
 formatStr = '--format=%s%n<split>'+githubUrl+'%H%n'+oaUrl+'%H'
 log = check_output(['git', 'log', '-1', '--stat', 'HEAD', formatStr])
 # log = check_output(['git', 'log', '-1', '--stat', 'HEAD','--format=%B'])
-str = json.dumps(sys.argv)
-print str;
+
 print 'start sending e-mail'
 print log
 # get email list
-emailsFile = open('emails.txt','r')
+tempDir = tempfile.gettempdir()
+emailsFile = open(tempDir+'/emails.txt','r')
 emailTo = emailsFile.read()
 emails = re.findall(r'([\+a-z0-9_\.-]+@[\da-z\.-]+\.[a-z\.]{2,20})',emailTo)
 emailTo = ';'.join(emails)
