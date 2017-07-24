@@ -15,21 +15,23 @@ print 'start sending e-mail'
 print log
 # get email list
 emailsFile = open('emails.txt','r')
-# emails = re.findall(r'([\+a-z0-9_\.-]+@[\da-z\.-]+\.[a-z\.]{2,20})',log)
 emailTo = emailsFile.read()
-# print 'end post-commit'
-contents = log.split('<split>')
-emial_title = contents[0]
-email_body = contents[1]
-import win32com.client as win32
-outlook = win32.Dispatch('outlook.application')
-mail = outlook.CreateItem(0)
-mail.To = emailTo
-mail.Subject = emial_title
-mail.Body = email_body
-# mail.HTMLBody = '<h2>HTML Message body</h2>'# this field is optional
+emails = re.findall(r'([\+a-z0-9_\.-]+@[\da-z\.-]+\.[a-z\.]{2,20})',emailTo)
+emailTo = ';'.join(emails)
+if len(emailTo) > 0 :
+    # print 'end post-commit'
+    contents = log.split('<split>')
+    emial_title = contents[0]
+    email_body = contents[1]
+    import win32com.client as win32
+    outlook = win32.Dispatch('outlook.application')
+    mail = outlook.CreateItem(0)
+    mail.To = emailTo
+    mail.Subject = emial_title
+    mail.Body = email_body
+    # mail.HTMLBody = '<h2>HTML Message body</h2>'# this field is optional
 
-# #In case you want to attach a file to the email
-# # attachment  = "Path to the attachment"
-# # mail.Attachments.Add(attachment)
-mail.Send()
+    # #In case you want to attach a file to the email
+    # # attachment  = "Path to the attachment"
+    # # mail.Attachments.Add(attachment)
+    mail.Send()
