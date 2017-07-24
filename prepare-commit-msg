@@ -30,39 +30,41 @@ import tempfile
 # print str
 # print 'start sending e-mail'
 branch_name = subprocess.check_output(
-                'git symbolic-ref --short HEAD', shell=True).strip().decode('utf-8')
+    'git symbolic-ref --short HEAD', shell=True).strip().decode('utf-8')
 new_msgs = []
 with open(sys.argv[1], 'r') as commit_message_file:
     commit_message = list(commit_message_file)
     for line in commit_message:
         line = line.strip()
         print line
-        line = '['+branch_name +']'+ line
+        line = '[' + branch_name + ']' + line
         # line = '[master]'+ line
         # line = line[0:-3]
-        
+
         newline = ''
         # find all emails
-        emails = re.findall(r'([\+a-z0-9_\.-]+@[\da-z\.-]+\.[a-z\.]{2,20})',line)
+        emails = re.findall(
+            r'([\+a-z0-9_\.-]+@[\da-z\.-]+\.[a-z\.]{2,20})', line)
         for emailStr in emails:
             # remove emails from comments
-            newline = line.replace(emailStr,'')
+            newline = line.replace(emailStr, '')
         emailTo = ';'.join(emails)
         print 'after:' + newline
-        new_msgs.append(newline)
+        if len(newline) > 0:
+            new_msgs.append(newline)
 
     # commit_message_file.seek(0)
-   
-        
-    #     # write emails to file
-    commit_message_file.close()   
 
-commit_message_file = open(sys.argv[1],'w')
-for line in new_msgs:
+    #     # write emails to file
+    commit_message_file.close()
+if len(new_msgs) > 0:
+    commit_message_file = open(sys.argv[1], 'w')
+    for line in new_msgs:
         commit_message_file.write(line)
-commit_message_file.close()
-tempDir = tempfile.gettempdir()
-emailsFile = open(tempDir+'/emails.txt','w') 
-emailsFile.write(emailTo)
-emailsFile.close()
+    commit_message_file.close()
+    if len(emailTo) > 0:
+        tempDir = tempfile.gettempdir()
+        emailsFile = open(tempDir + '/emails.txt', 'w')
+        emailsFile.write(emailTo)
+        emailsFile.close()
 print 'end commit-msg'
