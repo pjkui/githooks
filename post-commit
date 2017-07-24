@@ -1,0 +1,34 @@
+#!D:\Python27\python
+#!/bin/sh python
+
+print 'start post-commit'
+import sys, os, re, json
+from subprocess import check_output
+githubUrl = 'https://github.com/pocketgems/visualdirecting/commit/'
+oaUrl = 'http://git.code.oa.com/epsd/epsd/commit/'
+formatStr = '--format=%s%n<split>'+githubUrl+'%H%n'+oaUrl+'%H'
+log = check_output(['git', 'log', '-1', '--stat', 'HEAD', formatStr])
+# log = check_output(['git', 'log', '-1', '--stat', 'HEAD','--format=%B'])
+str = json.dumps(sys.argv)
+print str;
+print 'start sending e-mail'
+print log
+# get email list
+emails = re.findall(r'([\+a-z0-9_\.-]+@[\da-z\.-]+\.[a-z\.]{2,20})',log)
+emailTo = ';'.join(emails)
+contents = log.split('<split>')
+emial_title = contents[0]
+email_body = contents[1]
+import win32com.client as win32
+outlook = win32.Dispatch('outlook.application')
+mail = outlook.CreateItem(0)
+mail.To = emailTo
+mail.Subject = emial_title
+mail.Body = email_body
+# mail.HTMLBody = '<h2>HTML Message body</h2>'# this field is optional
+
+# #In case you want to attach a file to the email
+# # attachment  = "Path to the attachment"
+# # mail.Attachments.Add(attachment)
+mail.Send()
+print 'end post-commit'
